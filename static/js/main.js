@@ -1,0 +1,1 @@
+console.log("Mindnest calm animated app loaded.");

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section fade-in">
+  <div class="container two-column-layout">
+    <div class="column-main">
+      <h1>Your journal</h1>
+      <p class="section-intro">Write a few honest lines. That’s enough.</p>
+      <form method="post" enctype="multipart/form-data" class="journal-form floating-card">
+        <label>Title
+          <input type="text" name="title" placeholder="Optional title for this entry">
+        </label>
+        <label>Mood (optional)
+          <select name="mood">
+            <option value="">Choose a mood</option>
+            <option value="😊">😊 Light & hopeful</option>
+            <option value="😌">😌 Calm</option>
+            <option value="😐">😐 Neutral</option>
+            <option value="😔">😔 Low</option>
+            <option value="😣">😣 Heavy</option>
+          </select>
+        </label>
+        <label>Tags
+          <input type="text" name="tags" placeholder="e.g. morning, work, gratitude">
+        </label>
+        <label>Entry
+          <textarea name="content" rows="6" required placeholder="Write what’s on your mind..."></textarea>
+        </label>
+        <label>Attach an image (optional)
+          <input type="file" name="image" accept="image/*">
+        </label>
+        <button type="submit" class="btn btn-primary btn-glow">Save entry</button>
+      </form>
+    </div>
+    <aside class="column-side">
+      <h2>Recent entries</h2>
+      {% if entries %}
+        <ul class="recent-list entries-list floating-card">
+          {% for entry in entries %}
+            <li class="entry-item">
+              <div>
+                <p class="recent-title">
+                  {{ entry.mood or "📝" }} {{ entry.title or "Untitled entry" }}
+                </p>
+                <p class="recent-meta">{{ entry.created_at.strftime("%d %b %Y • %H:%M") }}</p>
+                {% if entry.tags %}
+                  <p class="tag-row">
+                    {% for tag in entry.tags.split(",") %}
+                      <span class="tag-pill">{{ tag.strip() }}</span>
+                    {% endfor %}
+                  </p>
+                {% endif %}
+              </div>
+              <form method="post" action="{{ url_for('delete_journal_entry', entry_id=entry.id) }}" onsubmit="return confirm('Delete this entry?');">
+                <button type="submit" class="btn-link">Delete</button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="mini-caption">No entries yet. Your first sentence can simply be “This is where I start.”</p>
+      {% endif %}
+    </aside>
+  </div>
+</section>
+{% endblock %}

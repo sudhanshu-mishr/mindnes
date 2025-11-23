@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section fade-in">
+  <div class="container profile-layout">
+    <div>
+      <h1>Your profile</h1>
+      <p class="section-intro">A simple overview of your account and gentle progress.</p>
+      <div class="profile-card floating-card">
+        <p><strong>Name:</strong> {{ current_user.name }}</p>
+        <p><strong>Email:</strong> {{ current_user.email }}</p>
+        <p><strong>Joined:</strong> {{ current_user.created_at.strftime("%d %b %Y") }}</p>
+        <p><strong>Time spent here:</strong> {{ total_minutes }} minutes (approx)</p>
+      </div>
+    </div>
+    <div class="profile-side">
+      <h2>Ideas for later</h2>
+      <ul class="profile-ideas">
+        <li>Add export of your journal.</li>
+        <li>Connect email reminders for daily check-ins.</li>
+        <li>Build a mobile companion app.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+{% endblock %}

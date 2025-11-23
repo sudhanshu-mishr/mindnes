@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero fade-in">
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow">Mental wellness • Journaling • Calm audio</p>
+      <h1>One soft space for your mind to land.</h1>
+      <p class="hero-text">
+        Capture your thoughts, track your mood, and let gentle soundscapes play in the background.
+        No social pressure. No noise. Just you and your breathing.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-glow">Create free account</a>
+        <a href="{{ url_for('login') }}" class="btn btn-ghost btn-soft">Log in</a>
+      </div>
+    </div>
+    <div class="hero-card floating-card">
+      <div class="mini-card">
+        <p class="mini-label">How it works</p>
+        <p class="mini-caption">1. Open your journal and write what feels true.</p>
+        <p class="mini-caption">2. Log how you feel from 1–5.</p>
+        <p class="mini-caption">3. Put on calm sounds and let your shoulders drop.</p>
+      </div>
+      <div class="mini-card">
+        <p class="mini-label">Made to feel light</p>
+        <p class="mini-caption">
+          Minimal pages, soft colours, and subtle hover animations so the interface gently
+          moves with you instead of shouting at you.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="container">
+    <h2>What you get</h2>
+    <div class="feature-grid">
+      <article class="feature-card card-hover">
+        <h3>Private journal</h3>
+        <p>Write freely about your day and feelings. Entries stay with your account only.</p>
+      </article>
+      <article class="feature-card card-hover">
+        <h3>Mood tracking</h3>
+        <p>Slide from 1–5, add a short note, and see a small trend of how you’ve been.</p>
+      </article>
+      <article class="feature-card card-hover">
+        <h3>Soft sound library</h3>
+        <p>White noise, coloured noise, ocean waves, forest wind, and Tibetan-style tones.</p>
+      </article>
+      <article class="feature-card card-hover">
+        <h3>Gentle progress</h3>
+        <p>Approximate time-on-site and activity summary help you see how often you show up.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+{% endblock %}

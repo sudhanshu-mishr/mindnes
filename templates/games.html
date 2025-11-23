@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1>Focus games</h1>
+    <p class="section-intro">
+      Short, simple games to gently train attention, working memory, and reaction speed.
+      Play for a few minutes when you want a quick reset.
+    </p>
+
+    <div class="game-grid">
+      <!-- Game 1: Focus Grid -->
+      <article class="game-card">
+        <h2>Focus grid</h2>
+        <p class="mini-caption">
+          Click the highlighted dot as quickly as you can. Stay relaxed and precise.
+        </p>
+        <div class="game-meta">
+          <span>Duration: 30s</span>
+          <span>Trains: visual focus & reaction</span>
+        </div>
+        <div class="focus-grid-wrapper">
+          <div id="focusGrid" class="focus-grid">
+            {% for i in range(16) %}
+            <button class="focus-cell" data-index="{{ i }}"></button>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="game-controls">
+          <button id="startFocusGrid" class="btn btn-primary btn-glow">Start</button>
+          <span id="focusGridTimer" class="game-label">Time: 30s</span>
+          <span id="focusGridScore" class="game-label">Score: 0</span>
+        </div>
+        <p id="focusGridMessage" class="mini-caption game-message"></p>
+      </article>
+
+      <!-- Game 2: Memory Sequence -->
+      <article class="game-card">
+        <h2>Memory sequence</h2>
+        <p class="mini-caption">
+          Watch the sequence light up, then repeat it. Each round adds one more step.
+        </p>
+        <div class="game-meta">
+          <span>Style: short rounds</span>
+          <span>Trains: working memory</span>
+        </div>
+        <div class="sequence-grid-wrapper">
+          <div id="sequenceGrid" class="sequence-grid">
+            {% for i in range(9) %}
+            <button class="sequence-cell" data-index="{{ i }}"></button>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="game-controls">
+          <button id="startSequence" class="btn btn-primary btn-glow">Start round</button>
+          <span id="sequenceLevel" class="game-label">Level: 1</span>
+          <span id="sequenceStatus" class="game-label"></span>
+        </div>
+        <p class="mini-caption game-message">
+          Tip: breathe slowly while you play—this is practice, not a test.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<script>
+  // ---------- Game 1: Focus grid ----------
+  (function() {
+    const grid = document.getElementById('focusGrid');
+    const startBtn = document.getElementById('startFocusGrid');
+    const timerEl = document.getElementById('focusGridTimer');
+    const scoreEl = document.getElementById('focusGridScore');
+    const messageEl = document.getElementById('focusGridMessage');
+
+    if (!grid || !startBtn) return;
+
+    const cells = Array.from(grid.querySelectorAll('.focus-cell'));
+    let activeIndex = null;
+    let score = 0;
+    let remaining = 30;
+    let running = false;
+    let timerId = null;
+
+    function clearActive() {
+      cells.forEach(c => c.classList.remove('active'));
+      activeIndex = null;
+    }
+
+    function setRandomActive() {
+      clearActive();
+      const idx = Math.floor(Math.random() * cells.length);
+      activeIndex = idx;
+      cells[idx].classList.add('active');
+    }
+
+    function updateTimer() {
+      timerEl.textContent = 'Time: ' + remaining + 's';
+    }
+
+    function updateScore() {
+      scoreEl.textContent = 'Score: ' + score;
+    }
+
+    function endGame() {
+      running = false;
+      clearActive();
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+      messageEl.textContent = 'Nice work. You clicked ' + score + ' targets in 30 seconds.';
+      startBtn.disabled = false;
+    }
+
+    function tick() {
+      remaining -= 1;
+      updateTimer();
+      if (remaining <= 0) {
+        endGame();
+      }
+    }
+
+    startBtn.addEventListener('click', function() {
+      score = 0;
+      remaining = 30;
+      updateScore();
+      updateTimer();
+      messageEl.textContent = '';
+      running = true;
+      startBtn.disabled = true;
+      setRandomActive();
+      if (timerId) clearInterval(timerId);
+      timerId = setInterval(tick, 1000);
+    });
+
+    cells.forEach((cell, idx) => {
+      cell.addEventListener('click', () => {
+        if (!running) return;
+        if (idx === activeIndex) {
+          score += 1;
+          updateScore();
+          setRandomActive();
+        } else {
+          // optional: tiny penalty
+          if (score > 0) {
+            score -= 1;
+            updateScore();
+          }
+        }
+      });
+    });
+  })();
+
+  // ---------- Game 2: Memory sequence ----------
+  (function() {
+    const grid = document.getElementById('sequenceGrid');
+    const startBtn = document.getElementById('startSequence');
+    const levelEl = document.getElementById('sequenceLevel');
+    const statusEl = document.getElementById('sequenceStatus');
+
+    if (!grid || !startBtn) return;
+
+    const cells = Array.from(grid.querySelectorAll('.sequence-cell'));
+    let sequence = [];
+    let userIndex = 0;
+    let level = 1;
+    let showing = false;
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function playSequence() {
+      showing = true;
+      statusEl.textContent = 'Watch...';
+      for (let i = 0; i < sequence.length; i++) {
+        const idx = sequence[i];
+        const cell = cells[idx];
+        cell.classList.add('active-sequence');
+        await sleep(450);
+        cell.classList.remove('active-sequence');
+        await sleep(160);
+      }
+      statusEl.textContent = 'Your turn';
+      showing = false;
+      userIndex = 0;
+    }
+
+    function nextLevel() {
+      // add one random step
+      const idx = Math.floor(Math.random() * cells.length);
+      sequence.push(idx);
+      levelEl.textContent = 'Level: ' + level;
+      playSequence();
+    }
+
+    startBtn.addEventListener('click', function() {
+      if (showing) return;
+      sequence = [];
+      level = 1;
+      levelEl.textContent = 'Level: ' + level;
+      statusEl.textContent = '';
+      nextLevel();
+    });
+
+    cells.forEach((cell, idx) => {
+      cell.addEventListener('click', () => {
+        if (showing || sequence.length === 0) return;
+        // brief flash when clicked
+        cell.classList.add('pressed');
+        setTimeout(() => cell.classList.remove('pressed'), 120);
+
+        if (idx === sequence[userIndex]) {
+          userIndex += 1;
+          if (userIndex === sequence.length) {
+            statusEl.textContent = 'Nice! Preparing next round...';
+            level += 1;
+            setTimeout(nextLevel, 800);
+          }
+        } else {
+          statusEl.textContent = 'That was a different cell. Sequence reset at level ' + level + '.';
+          sequence = [];
+        }
+      });
+    });
+  })();
+</script>
+{% endblock %}

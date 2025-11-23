@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section section-dashboard fade-in">
+  <div class="container dashboard-grid">
+    <div class="dash-main">
+      <h1>Hi, {{ current_user.name.split(' ')[0] }} 👋</h1>
+      <p class="dash-sub">Here’s a simple overview of your week.</p>
+
+      <div class="dash-cards">
+        <div class="dash-card floating-card">
+          <p class="mini-label">Today’s quote</p>
+          <p class="quote-text">“{{ quote.text }}”</p>
+          <p class="quote-author">— {{ quote.author }}</p>
+        </div>
+        <div class="dash-card dash-metrics floating-card">
+          <div>
+            <p class="metric-label">Journal entries</p>
+            <p class="metric-value">{{ total_entries }}</p>
+          </div>
+          <div>
+            <p class="metric-label">Mood check-ins</p>
+            <p class="metric-value">{{ total_moods }}</p>
+          </div>
+          <div>
+            <p class="metric-label">Time spent</p>
+            <p class="metric-value">{{ total_minutes }} min</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-chart-card floating-card">
+        <div class="dash-chart-header">
+          <h2>Recent mood trend</h2>
+          <p class="mini-caption">Softly track how you’ve been feeling over the last days.</p>
+        </div>
+        <canvas id="moodChart"></canvas>
+      </div>
+    </div>
+
+    <aside class="dash-side">
+      <div class="side-card floating-card">
+        <h3>Quick actions</h3>
+        <div class="quick-actions">
+          <a href="{{ url_for('journal') }}" class="pill-link">✏️ New journal entry</a>
+          <a href="{{ url_for('mood') }}" class="pill-link">💚 Log mood</a>
+          <a href="{{ url_for('sounds') }}" class="pill-link">🎧 Play sounds</a>
+          <a href="{{ url_for('resources') }}" class="pill-link">🌊 Open resources</a>
+        </div>
+      </div>
+
+      <div class="side-card floating-card">
+        <h3>Recent entries</h3>
+        {% if recent_entries %}
+          <ul class="recent-list">
+            {% for entry in recent_entries %}
+              <li>
+                <span class="recent-title">{{ entry.title or "Untitled entry" }}</span>
+                <span class="recent-meta">{{ entry.created_at.strftime("%d %b %Y") }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="mini-caption">No entries yet. Your first reflection is a beautiful place to start.</p>
+        {% endif %}
+      </div>
+    </aside>
+  </div>
+</section>
+
+<script>
+  const labels = {{ mood_labels|tojson }};
+  const data = {{ mood_values|tojson }};
+  if (labels.length) {
+    const ctx = document.getElementById('moodChart');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Mood (1–5)',
+          data: data,
+          tension: 0.4,
+          fill: true,
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            min: 1,
+            max: 5,
+            ticks: { stepSize: 1 }
+          }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section fade-in">
+  <div class="container two-column-layout">
+    <div class="column-main">
+      <h1>Mood check-in</h1>
+      <p class="section-intro">Slide, add one or two words, and you’re done.</p>
+      <form method="post" class="mood-form floating-card">
+        <label>Your mood (1–5)
+          <input type="range" min="1" max="5" step="1" name="mood_value" value="3" oninput="updateMoodValue(this.value)">
+          <div class="mood-scale">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+          </div>
+          <p class="mood-value-display">Current: <span id="moodValue">3</span></p>
+        </label>
+        <label>Emoji / word
+          <input type="text" name="emotion_label" placeholder="e.g. 😌 calm, 😣 tense">
+        </label>
+        <label>Note (optional)
+          <textarea name="note" rows="4" placeholder="What’s happening or how does it feel in your body?"></textarea>
+        </label>
+        <button type="submit" class="btn btn-primary btn-glow">Save check-in</button>
+      </form>
+    </div>
+    <aside class="column-side">
+      <h2>Recent moods</h2>
+      {% if logs %}
+        <ul class="recent-list mood-list floating-card">
+          {% for log in logs %}
+            <li>
+              <div>
+                <p class="recent-title">
+                  {{ log.emotion_label or ("Mood " ~ log.mood_value) }}
+                </p>
+                <p class="recent-meta">{{ log.created_at.strftime("%d %b %Y • %H:%M") }}</p>
+                {% if log.note %}
+                  <p class="mini-caption">{{ log.note }}</p>
+                {% endif %}
+              </div>
+              <span class="mood-badge">Level {{ log.mood_value }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="mini-caption">No check-ins yet. Your first one can take less than 10 seconds.</p>
+      {% endif %}
+
+      <div class="dash-chart-card small-chart floating-card">
+        <h3>Last 14 moods</h3>
+        <canvas id="moodHistoryChart"></canvas>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<script>
+  function updateMoodValue(v) {
+    document.getElementById('moodValue').innerText = v;
+  }
+  const labels = {{ labels|tojson }};
+  const values = {{ values|tojson }};
+  if (labels.length) {
+    const ctx = document.getElementById('moodHistoryChart');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Mood level',
+          data: values,
+          tension: 0.4,
+          fill: true,
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: { y: { min: 1, max: 5, ticks: { stepSize: 1 } } }
+      }
+    });
+  }
+</script>
+{% endblock %}

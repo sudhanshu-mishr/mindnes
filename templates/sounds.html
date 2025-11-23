@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section fade-in">
+  <div class="container">
+    <h1>Calm sounds</h1>
+    <p class="section-intro">
+      Play these in the background while you write or reflect. All sounds are simple,
+      generated tones and noise bundled directly with this app.
+    </p>
+
+    <h2>White & coloured noise</h2>
+    <div class="resource-grid">
+      {% for s in white_noises %}
+        <article class="resource-card floating-card">
+          <h3>{{ s.title }}</h3>
+          <audio controls preload="auto" class="audio-player">
+            <source src="{{ url_for('static', filename='audio/' ~ s.filename) }}" type="audio/wav">
+            Your browser does not support the audio element.
+          </audio>
+        </article>
+      {% endfor %}
+    </div>
+
+    <h2 style="margin-top:24px;">Nature-inspired ambience</h2>
+    <div class="resource-grid">
+      {% for s in nature_tracks %}
+        <article class="resource-card floating-card">
+          <h3>{{ s.title }}</h3>
+          <audio controls preload="auto" class="audio-player">
+            <source src="{{ url_for('static', filename='audio/' ~ s.filename) }}" type="audio/wav">
+            Your browser does not support the audio element.
+          </audio>
+        </article>
+      {% endfor %}
+    </div>
+
+    <h2 style="margin-top:24px;">Tibetan-style meditation tracks</h2>
+    <div class="resource-grid">
+      {% for s in tibetan_tracks %}
+        <article class="resource-card floating-card">
+          <h3>{{ s.title }}</h3>
+          <audio controls preload="auto" class="audio-player">
+            <source src="{{ url_for('static', filename='audio/' ~ s.filename) }}" type="audio/wav">
+            Your browser does not support the audio element.
+          </audio>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

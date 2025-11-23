@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section fade-in">
+  <div class="container">
+    <div class="admin-header">
+      <h1>Admin panel</h1>
+      <p class="section-intro">
+        Logged in as <strong>sudhanshu</strong>. Below is a simple overview of registered users
+        and their activity inside the app.
+      </p>
+    </div>
+
+    <div class="admin-table-wrapper floating-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Joined</th>
+            <th>Entries</th>
+            <th>Mood logs</th>
+            <th>Time on site</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+            <tr>
+              <td>{{ u.id }}</td>
+              <td>{{ u.name }}</td>
+              <td>{{ u.email }}</td>
+              <td>{{ u.joined }}</td>
+              <td>{{ u.entries }}</td>
+              <td>{{ u.moods }}</td>
+              <td>{{ u.time }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:8px;">
+      <a href="{{ url_for('admin_logout') }}" class="btn btn-ghost btn-soft">Log out admin</a>
+    </p>
+  </div>
+</section>
+{% endblock %}
