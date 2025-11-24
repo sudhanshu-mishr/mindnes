@@ -6,6 +6,7 @@ from datetime import datetime, date
 import os, random
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+print("USING DB FILE:", os.path.join(BASE_DIR, "mindnest.db"))
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "change-this-secret-key"
